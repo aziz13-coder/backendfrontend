@@ -266,6 +266,9 @@ def resolve(
             "interpretation": "Unity of purpose - same planetary energy governs both querent and matter",
             "traditional_view": "Favorable for agreement and harmony between parties",
             "requires_enhanced_analysis": True,
+            # Track which houses share the ruler so downstream logic can
+            # reference the original house pair without recomputing
+            "houses": [querent_house, quesited_house],
         }
 
     description = (

@@ -2016,21 +2016,30 @@ class EnhancedTraditionalHoraryJudgmentEngine:
         # Fix taxonomy issue where shared significator message repeated the same house
         if desc.startswith("Shared Significator") and significators.get("same_ruler_analysis"):
             same_ruler_info = significators["same_ruler_analysis"]
-            houses = list(same_ruler_info.get("houses", []))
+            # Prefer house data from same_ruler_analysis but fall back as needed
+            houses = list(
+                same_ruler_info.get("houses")
+                or significators.get("houses")
+                or [
+                    significators.get("querent_house"),
+                    significators.get("quesited_house"),
+                ]
+            )
             if len(houses) >= 2:
-                # If houses are duplicated, use the individual querent/quesited houses
+                # If houses are duplicated, use the distinct quesited house when available
                 if houses[0] == houses[1]:
                     q_house = significators.get("querent_house")
                     qd_house = significators.get("quesited_house")
                     if q_house and qd_house and q_house != qd_house:
                         houses = [q_house, qd_house]
+                # Update analysis with the deduplicated pair
+                same_ruler_info["houses"] = houses
                 shared = same_ruler_info.get("shared_ruler")
-                if shared and len(houses) >= 2:
+                if shared:
                     desc = (
                         f"Shared Significator: {shared.value} rules both houses {houses[0]} and {houses[1]}"
                     )
                     significators["description"] = desc
-                    same_ruler_info["houses"] = houses
 
         reasoning.append(f"Significators: {significators['description']}")
         
